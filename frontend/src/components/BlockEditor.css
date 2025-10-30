@@ -130,3 +130,53 @@
 .btn:active {
   transform: scale(0.98);
 }
+
+.btn-small {
+  padding: 4px 12px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.upload-zone {
+  border: 2px dashed #d9d9d7;
+  border-radius: 6px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+  background: #fafafa;
+}
+
+.upload-zone:hover {
+  border-color: #2383e2;
+  background: #f0f7ff;
+}
+
+.upload-zone.dragging {
+  border-color: #2383e2;
+  background: #e6f2ff;
+  transform: scale(1.02);
+}
+
+.upload-zone p {
+  margin: 4px 0;
+  color: #37352f;
+  font-size: 14px;
+}
+
+.upload-hint {
+  font-size: 12px !important;
+  color: #787774 !important;
+}
+
+.upload-zone .image-preview {
+  background: transparent;
+  padding: 0;
+}
+
+.upload-zone .image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+}
