@@ -5,6 +5,10 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 ## Features
 
 - **Step 1 Complete**: Load and render blocks (text and image blocks) from SQLite database ✅
+- **Step 2 Complete**: Add new blocks and save them to the database ✅
+  - Text blocks: Edit text content and choose between H1, H2, H3, or paragraph styles
+  - Image blocks: Customize source URL, width, and height
+  - All blocks persist to SQLite backend
 
 ## Tech Stack
 
@@ -79,6 +83,8 @@ The app will be available at `http://localhost:5173`
 ### API Endpoints
 
 - `GET /api/blocks` - Fetch all blocks ordered by position
+- `POST /api/blocks` - Create a new block
+  - Body: `{ type, content?, style?, imageUrl?, width?, height?, position }`
 
 ## Block Types
 
@@ -94,9 +100,11 @@ The app will be available at `http://localhost:5173`
 
 - **Commit 1**: Backend setup with Express, TypeScript, and SQLite
 - **Commit 2**: Frontend setup with React components for rendering blocks
+- **Commit 3**: README documentation
+- **Commit 4**: POST /api/blocks endpoint for creating blocks
+- **Commit 5**: Block creation UI with text and image editors
 
 ## Next Steps
 
-- Step 2: Add new blocks and save them
-- Step 3: Re-order blocks
+- Step 3: Re-order blocks (drag and drop)
 - Step 4: Edit existing blocks
