@@ -9,6 +9,10 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
   - Text blocks: Edit text content and choose between H1, H2, H3, or paragraph styles
   - Image blocks: Customize source URL, width, and height
   - All blocks persist to SQLite backend
+- **Step 3 Complete**: Re-order blocks with drag-and-drop ✅
+  - Native HTML5 drag-and-drop implementation
+  - Visual drag handle appears on hover
+  - Position changes persist to database
 
 ## Tech Stack
 
@@ -85,6 +89,8 @@ The app will be available at `http://localhost:5173`
 - `GET /api/blocks` - Fetch all blocks ordered by position
 - `POST /api/blocks` - Create a new block
   - Body: `{ type, content?, style?, imageUrl?, width?, height?, position }`
+- `PUT /api/blocks/:id` - Update a block's position
+  - Body: `{ position }`
 
 ## Block Types
 
@@ -103,8 +109,10 @@ The app will be available at `http://localhost:5173`
 - **Commit 3**: README documentation
 - **Commit 4**: POST /api/blocks endpoint for creating blocks
 - **Commit 5**: Block creation UI with text and image editors
+- **Commit 6**: README update for Step 2
+- **Commit 7**: PUT endpoint to update block positions
+- **Commit 8**: Drag-and-drop reordering with position persistence
 
 ## Next Steps
 
-- Step 3: Re-order blocks (drag and drop)
 - Step 4: Edit existing blocks
