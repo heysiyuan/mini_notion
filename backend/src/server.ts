@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { dbAll, initDatabase } from './database';
+import { dbAll, dbRun, initDatabase } from './database';
 import { Block } from './types';
 
 const app = express();
@@ -16,6 +16,37 @@ app.get('/api/blocks', async (req, res) => {
     res.json(blocks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch blocks' });
+  }
+});
+
+// Create a new block
+app.post('/api/blocks', async (req, res) => {
+  try {
+    const { type, content, style, imageUrl, width, height, position } = req.body;
+
+    // Validate required fields
+    if (!type || (type !== 'text' && type !== 'image')) {
+      return res.status(400).json({ error: 'Invalid block type' });
+    }
+
+    if (position === undefined || position === null) {
+      return res.status(400).json({ error: 'Position is required' });
+    }
+
+    // Insert the new block
+    const result = await dbRun(
+      `INSERT INTO blocks (type, content, style, imageUrl, width, height, position)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [type, content || null, style || null, imageUrl || null, width || null, height || null, position]
+    );
+
+    // Fetch the newly created block
+    const newBlock = await dbAll('SELECT * FROM blocks WHERE id = ?', [result.lastID]) as Block[];
+    
+    res.status(201).json(newBlock[0]);
+  } catch (error) {
+    console.error('Error creating block:', error);
+    res.status(500).json({ error: 'Failed to create block' });
   }
 });
 

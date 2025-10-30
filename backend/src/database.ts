@@ -1,13 +1,35 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
-import { promisify } from 'util';
 
 const db = new sqlite3.Database(path.join(__dirname, '../database.db'));
 
-// Promisify database methods
-const dbRun = promisify(db.run.bind(db));
-const dbGet = promisify(db.get.bind(db));
-const dbAll = promisify(db.all.bind(db));
+// Wrapper functions for database operations
+function dbRun(sql: string, params: any[] = []): Promise<any> {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) reject(err);
+      else resolve({ lastID: this.lastID, changes: this.changes });
+    });
+  });
+}
+
+function dbGet(sql: string, params: any[] = []): Promise<any> {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
+
+function dbAll(sql: string, params: any[] = []): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
 
 // Initialize database
 async function initDatabase() {
