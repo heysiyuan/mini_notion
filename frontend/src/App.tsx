@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Block } from './types'
 import { BlockComponent } from './components/BlockComponent'
 import { DraggableBlock } from './components/DraggableBlock'
 import { AddBlockMenu } from './components/AddBlockMenu'
 import { TextBlockEditor } from './components/TextBlockEditor'
 import { ImageBlockEditor } from './components/ImageBlockEditor'
+import { useHistory } from './hooks/useHistory'
 import './App.css'
 
 function App() {
@@ -14,10 +15,114 @@ function App() {
   const [editingType, setEditingType] = useState<'text' | 'image' | null>(null)
   const [editingBlock, setEditingBlock] = useState<Block | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  
+  // History management for undo/redo
+  const { saveState, undo, redo, canUndo, canRedo, reset } = useHistory()
+  const isRestoringRef = useRef(false)
 
   useEffect(() => {
     fetchBlocks()
   }, [])
+
+  // Initialize history when blocks are loaded
+  useEffect(() => {
+    if (blocks.length > 0 && !isRestoringRef.current) {
+      reset(blocks)
+    }
+  }, [blocks.length === 0 ? '' : 'loaded']) // Only run once when initially loaded
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Command (Mac) or Ctrl (Windows/Linux)
+      const isModifierPressed = e.metaKey || e.ctrlKey
+
+      if (isModifierPressed && e.key === 'z') {
+        e.preventDefault()
+
+        if (e.shiftKey) {
+          // Command/Ctrl + Shift + Z = Redo
+          handleRedo()
+        } else {
+          // Command/Ctrl + Z = Undo
+          handleUndo()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [canUndo, canRedo, blocks])
+
+  const handleUndo = useCallback(async () => {
+    if (!canUndo) return
+
+    const previousState = undo()
+    if (!previousState) return
+
+    isRestoringRef.current = true
+    setBlocks(previousState)
+
+    // Sync with backend
+    try {
+      const updates = previousState.map((block, index) =>
+        fetch(`/api/blocks/${block.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            position: index,
+            content: block.content,
+            style: block.style,
+            imageUrl: block.imageUrl,
+            width: block.width,
+            height: block.height,
+          }),
+        })
+      )
+      await Promise.all(updates)
+    } catch (err) {
+      console.error('Failed to sync undo with backend:', err)
+    } finally {
+      setTimeout(() => {
+        isRestoringRef.current = false
+      }, 100)
+    }
+  }, [canUndo, undo])
+
+  const handleRedo = useCallback(async () => {
+    if (!canRedo) return
+
+    const nextState = redo()
+    if (!nextState) return
+
+    isRestoringRef.current = true
+    setBlocks(nextState)
+
+    // Sync with backend
+    try {
+      const updates = nextState.map((block, index) =>
+        fetch(`/api/blocks/${block.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            position: index,
+            content: block.content,
+            style: block.style,
+            imageUrl: block.imageUrl,
+            width: block.width,
+            height: block.height,
+          }),
+        })
+      )
+      await Promise.all(updates)
+    } catch (err) {
+      console.error('Failed to sync redo with backend:', err)
+    } finally {
+      setTimeout(() => {
+        isRestoringRef.current = false
+      }, 100)
+    }
+  }, [canRedo, redo])
 
   const fetchBlocks = async () => {
     try {
@@ -61,7 +166,14 @@ function App() {
       }
 
       const newBlock = await response.json();
-      setBlocks([...blocks, newBlock]);
+      const updatedBlocks = [...blocks, newBlock];
+      setBlocks(updatedBlocks);
+      
+      // Save to history
+      if (!isRestoringRef.current) {
+        saveState(updatedBlocks);
+      }
+      
       setEditingType(null);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to create block');
@@ -97,7 +209,14 @@ function App() {
       const updatedBlock = await response.json();
       
       // Update the block in the state
-      setBlocks(blocks.map(b => b.id === updatedBlock.id ? updatedBlock : b));
+      const updatedBlocks = blocks.map(b => b.id === updatedBlock.id ? updatedBlock : b);
+      setBlocks(updatedBlocks);
+      
+      // Save to history
+      if (!isRestoringRef.current) {
+        saveState(updatedBlocks);
+      }
+      
       setEditingType(null);
       setEditingBlock(null);
     } catch (err) {
@@ -141,7 +260,11 @@ function App() {
 
       await Promise.all(updates);
       
-      // Success - positions are already updated in state, no need to refetch
+      // Success - save to history
+      if (!isRestoringRef.current) {
+        saveState(blocks);
+      }
+      
       setDraggedIndex(null);
     } catch (err) {
       console.error('Failed to update block positions:', err);
@@ -202,6 +325,12 @@ function App() {
         {!editingType && (
           <AddBlockMenu onSelectType={setEditingType} />
         )}
+      </div>
+      
+      {/* Undo/Redo indicator */}
+      <div className="history-indicator">
+        <span className={canUndo ? 'active' : ''}>⌘Z Undo</span>
+        <span className={canRedo ? 'active' : ''}>⌘⇧Z Redo</span>
       </div>
     </div>
   )

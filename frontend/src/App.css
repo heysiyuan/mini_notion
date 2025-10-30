@@ -22,6 +22,30 @@
   color: #e03e3e;
 }
 
+.history-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: monospace;
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.history-indicator span {
+  opacity: 0.5;
+}
+
+.history-indicator span.active {
+  opacity: 1;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .page {
     padding: 48px 24px 30vh;

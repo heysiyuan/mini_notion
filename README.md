@@ -19,6 +19,12 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
   - Click any text block to edit content and style
   - Click any image block to change image or dimensions
   - Changes save instantly to database
+- **Undo/Redo**: Full history management ✅
+  - Press `⌘Z` (Mac) or `Ctrl+Z` (Windows/Linux) to undo
+  - Press `⌘⇧Z` (Mac) or `Ctrl+Shift+Z` (Windows/Linux) to redo
+  - Tracks all operations: create, edit, reorder
+  - Syncs changes with backend database
+  - Visual indicator shows undo/redo availability
 
 ## Tech Stack
 
@@ -59,6 +65,8 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 │   ├── src/
 │   │   ├── App.tsx        # Main app component
 │   │   ├── types.ts       # TypeScript types
+│   │   ├── hooks/
+│   │   │   └── useHistory.ts      # Undo/redo history management
 │   │   └── components/
 │   │       └── BlockComponent.tsx  # Block rendering
 │   ├── package.json
@@ -181,12 +189,25 @@ All tests use an in-memory SQLite database for isolation and speed.
 - **Commit 15**: Click-to-edit functionality for text and image blocks
 - **Commit 16**: README update for Step 4
 - **Commit 17**: Comprehensive backend tests: 31 tests for API endpoints and database operations
+- **Commit 18**: Implement undo/redo with Command+Z/Command+Shift+Z keyboard shortcuts
 
 ## All Core Requirements Complete! 🎉
 
-All 4 steps completed with comprehensive testing:
+All 4 steps completed with comprehensive testing and extra features:
 - ✅ Step 1: Load and render blocks
 - ✅ Step 2: Add new blocks and save them
 - ✅ Step 3: Re-order blocks with drag-and-drop
 - ✅ Step 4: Edit existing blocks
 - ✅ **Testing**: 31 backend tests with 100% pass rate
+- ✅ **Undo/Redo**: Full history management with keyboard shortcuts
+
+## Keyboard Shortcuts
+
+- `⌘Z` / `Ctrl+Z` - Undo last action
+- `⌘⇧Z` / `Ctrl+Shift+Z` - Redo last undone action
+
+The undo/redo system tracks:
+- Block creation
+- Block content/style edits
+- Image property changes
+- Block reordering via drag-and-drop
