@@ -4,3 +4,11 @@ dist/
 .DS_Store
 *.log
 backend/uploads/
+.env
+.env.local
+coverage/
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

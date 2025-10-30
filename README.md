@@ -4,22 +4,22 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 
 ## Features
 
-- **Step 1 Complete**: Load and render blocks (text and image blocks) from SQLite database ✅
-- **Step 2 Complete**: Add new blocks and save them to the database ✅
-  - Text blocks: Edit text content and choose between H1, H2, H3, or paragraph styles
-  - Image blocks: Customize source URL, width, and height
+- **Load and Render**: Display text and image blocks from SQLite database
+  - Text blocks with multiple styles (H1, H2, H3, paragraph)
+  - Image blocks with custom dimensions
+- **Create Blocks**: Add new text and image blocks
   - Drag-and-drop image upload from local computer
   - Automatic dimension detection for images
   - All blocks persist to SQLite backend
-- **Step 3 Complete**: Re-order blocks with drag-and-drop ✅
+- **Reorder Blocks**: Drag-and-drop repositioning
   - Native HTML5 drag-and-drop implementation
   - Visual drag handle appears on hover
   - Position changes persist to database
-- **Step 4 Complete**: Edit existing blocks ✅
+- **Edit Blocks**: Click-to-edit existing content
   - Click any text block to edit content and style
   - Click any image block to change image or dimensions
   - Changes save instantly to database
-- **Undo/Redo**: Full history management ✅
+- **Undo/Redo**: Full history management
   - Press `⌘Z` (Mac) or `Ctrl+Z` (Windows/Linux) to undo
   - Press `⌘⇧Z` (Mac) or `Ctrl+Shift+Z` (Windows/Linux) to redo
   - Tracks all operations: create, edit, reorder
@@ -167,39 +167,9 @@ All tests use an in-memory SQLite database for isolation and speed.
 - Content stored as plain text
 
 ### Image Block
-- Supports custom URL
+- Supports custom URL or file upload
 - Configurable width and height
-
-## Development Timeline
-
-- **Commit 1**: Backend setup with Express, TypeScript, and SQLite
-- **Commit 2**: Frontend setup with React components for rendering blocks
-- **Commit 3**: README documentation
-- **Commit 4**: POST /api/blocks endpoint for creating blocks
-- **Commit 5**: Block creation UI with text and image editors
-- **Commit 6**: README update for Step 2
-- **Commit 7**: PUT endpoint to update block positions
-- **Commit 8**: Drag-and-drop reordering with position persistence
-- **Commit 9**: README update for Step 3
-- **Commit 10**: Fix scroll to top after drag-and-drop
-- **Commit 11**: Image upload endpoint with multer
-- **Commit 12**: Drag-and-drop image upload with auto dimension detection
-- **Commit 13**: Automatic image resizing to fit page width
-- **Commit 14**: Update PUT endpoint to support editing block content
-- **Commit 15**: Click-to-edit functionality for text and image blocks
-- **Commit 16**: README update for Step 4
-- **Commit 17**: Comprehensive backend tests: 31 tests for API endpoints and database operations
-- **Commit 18**: Implement undo/redo with Command+Z/Command+Shift+Z keyboard shortcuts
-
-## All Core Requirements Complete! 🎉
-
-All 4 steps completed with comprehensive testing and extra features:
-- ✅ Step 1: Load and render blocks
-- ✅ Step 2: Add new blocks and save them
-- ✅ Step 3: Re-order blocks with drag-and-drop
-- ✅ Step 4: Edit existing blocks
-- ✅ **Testing**: 31 backend tests with 100% pass rate
-- ✅ **Undo/Redo**: Full history management with keyboard shortcuts
+- Automatic dimension detection
 
 ## Keyboard Shortcuts
 
