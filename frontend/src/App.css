@@ -1,0 +1,30 @@
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+.page {
+  background: white;
+  padding: 96px 96px 30vh;
+  min-height: 500px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.error {
+  color: #e03e3e;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 48px 24px 30vh;
+  }
+}
+
