@@ -12,6 +12,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [editingType, setEditingType] = useState<'text' | 'image' | null>(null)
+  const [editingBlock, setEditingBlock] = useState<Block | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   useEffect(() => {
@@ -69,6 +70,39 @@ function App() {
 
   const handleCancelEdit = () => {
     setEditingType(null);
+    setEditingBlock(null);
+  };
+
+  const handleEditBlock = (block: Block) => {
+    setEditingBlock(block);
+    setEditingType(block.type);
+  };
+
+  const handleUpdateBlock = async (blockData: Partial<Block>) => {
+    if (!editingBlock) return;
+
+    try {
+      const response = await fetch(`/api/blocks/${editingBlock.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blockData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update block');
+      }
+
+      const updatedBlock = await response.json();
+      
+      // Update the block in the state
+      setBlocks(blocks.map(b => b.id === updatedBlock.id ? updatedBlock : b));
+      setEditingType(null);
+      setEditingBlock(null);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update block');
+    }
   };
 
   const handleDragStart = (index: number) => {
@@ -145,21 +179,23 @@ function App() {
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
-            <BlockComponent block={block} />
+            <BlockComponent block={block} onEdit={handleEditBlock} />
           </DraggableBlock>
         ))}
         
         {editingType === 'text' && (
           <TextBlockEditor 
-            onSave={handleSaveBlock}
+            onSave={editingBlock ? handleUpdateBlock : handleSaveBlock}
             onCancel={handleCancelEdit}
+            initialData={editingBlock || undefined}
           />
         )}
         
         {editingType === 'image' && (
           <ImageBlockEditor 
-            onSave={handleSaveBlock}
+            onSave={editingBlock ? handleUpdateBlock : handleSaveBlock}
             onCancel={handleCancelEdit}
+            initialData={editingBlock || undefined}
           />
         )}
         

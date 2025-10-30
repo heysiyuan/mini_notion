@@ -8,6 +8,16 @@
   padding: 3px 2px;
   line-height: 1.5;
   color: #37352f;
+  transition: background-color 0.15s ease;
+  border-radius: 3px;
+}
+
+.text-block.editable {
+  cursor: pointer;
+}
+
+.text-block.editable:hover {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .text-block h1 {
@@ -34,6 +44,16 @@
   align-items: center;
   padding: 8px 0;
   margin: 12px 0;
+  transition: opacity 0.15s ease;
+  border-radius: 3px;
+}
+
+.image-block.editable {
+  cursor: pointer;
+}
+
+.image-block.editable:hover {
+  opacity: 0.85;
 }
 
 .image-block img {
