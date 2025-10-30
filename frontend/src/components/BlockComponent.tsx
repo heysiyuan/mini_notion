@@ -31,14 +31,28 @@ function TextBlock({ block }: BlockComponentProps) {
 }
 
 function ImageBlock({ block }: BlockComponentProps) {
+  const maxWidth = 900; // Match the page max-width
+  const originalWidth = block.width || 800;
+  const originalHeight = block.height || 400;
+  
+  // Calculate scaled dimensions if image is too wide
+  let displayWidth = originalWidth;
+  let displayHeight = originalHeight;
+  
+  if (originalWidth > maxWidth) {
+    const scale = maxWidth / originalWidth;
+    displayWidth = maxWidth;
+    displayHeight = Math.round(originalHeight * scale);
+  }
+  
   return (
     <div className="block image-block">
       <img
         src={block.imageUrl}
         alt="Block content"
         style={{
-          width: block.width ? `${block.width}px` : 'auto',
-          height: block.height ? `${block.height}px` : 'auto',
+          width: `${displayWidth}px`,
+          height: `${displayHeight}px`,
           maxWidth: '100%',
         }}
       />
