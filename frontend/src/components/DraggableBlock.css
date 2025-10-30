@@ -1,0 +1,43 @@
+.draggable-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  position: relative;
+  transition: background-color 0.15s ease;
+  border-radius: 3px;
+  margin: 2px 0;
+}
+
+.draggable-block:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.draggable-block.dragging {
+  opacity: 0.5;
+}
+
+.drag-handle {
+  flex-shrink: 0;
+  width: 18px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c9c7c4;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.draggable-block:hover .drag-handle {
+  opacity: 1;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.block-content {
+  flex: 1;
+  min-width: 0;
+}

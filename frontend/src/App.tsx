@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Block } from './types'
 import { BlockComponent } from './components/BlockComponent'
+import { DraggableBlock } from './components/DraggableBlock'
 import { AddBlockMenu } from './components/AddBlockMenu'
 import { TextBlockEditor } from './components/TextBlockEditor'
 import { ImageBlockEditor } from './components/ImageBlockEditor'
@@ -11,6 +12,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [editingType, setEditingType] = useState<'text' | 'image' | null>(null)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     fetchBlocks()
@@ -69,6 +71,54 @@ function App() {
     setEditingType(null);
   };
 
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (index: number) => {
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newBlocks = [...blocks];
+    const draggedBlock = newBlocks[draggedIndex];
+    
+    // Remove from old position
+    newBlocks.splice(draggedIndex, 1);
+    // Insert at new position
+    newBlocks.splice(index, 0, draggedBlock);
+    
+    setBlocks(newBlocks);
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = async () => {
+    if (draggedIndex === null) return;
+
+    // Update positions in the backend
+    try {
+      const updates = blocks.map((block, index) => 
+        fetch(`/api/blocks/${block.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ position: index }),
+        })
+      );
+
+      await Promise.all(updates);
+      
+      // Refresh blocks to get updated data
+      await fetchBlocks();
+    } catch (err) {
+      console.error('Failed to update block positions:', err);
+      alert('Failed to save new order');
+      // Revert on error
+      await fetchBlocks();
+    } finally {
+      setDraggedIndex(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="app">
@@ -88,8 +138,16 @@ function App() {
   return (
     <div className="app">
       <div className="page">
-        {blocks.map((block) => (
-          <BlockComponent key={block.id} block={block} />
+        {blocks.map((block, index) => (
+          <DraggableBlock
+            key={block.id}
+            index={index}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <BlockComponent block={block} />
+          </DraggableBlock>
         ))}
         
         {editingType === 'text' && (
