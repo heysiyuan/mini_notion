@@ -244,12 +244,11 @@ describe('API Endpoints', () => {
 
       const mockCreatedBlock = {
         id: 2,
-        type: 'image',
         content: null,
         style: null,
-        ...newBlock,
         createdAt: '2025-10-30',
         updatedAt: '2025-10-30',
+        ...newBlock,
       };
 
       (mockDbRun as jest.Mock).mockResolvedValue({ lastID: 2, changes: 1 });

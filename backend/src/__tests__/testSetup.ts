@@ -60,6 +60,7 @@ export async function setupTestDb(): Promise<sqlite3.Database> {
 
 export async function cleanupTestDb(db: sqlite3.Database): Promise<void> {
   await dbRun(db, 'DELETE FROM blocks');
+  await dbRun(db, 'DELETE FROM sqlite_sequence WHERE name="blocks"');
 }
 
 export async function closeTestDb(db: sqlite3.Database): Promise<void> {
