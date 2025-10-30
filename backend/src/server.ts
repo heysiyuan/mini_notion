@@ -50,6 +50,34 @@ app.post('/api/blocks', async (req, res) => {
   }
 });
 
+// Update block position
+app.put('/api/blocks/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { position } = req.body;
+
+    if (position === undefined || position === null) {
+      return res.status(400).json({ error: 'Position is required' });
+    }
+
+    await dbRun(
+      'UPDATE blocks SET position = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+      [position, id]
+    );
+
+    const updatedBlock = await dbAll('SELECT * FROM blocks WHERE id = ?', [id]) as Block[];
+    
+    if (updatedBlock.length === 0) {
+      return res.status(404).json({ error: 'Block not found' });
+    }
+
+    res.json(updatedBlock[0]);
+  } catch (error) {
+    console.error('Error updating block:', error);
+    res.status(500).json({ error: 'Failed to update block' });
+  }
+});
+
 // Initialize database and start server
 initDatabase().then(() => {
   app.listen(PORT, () => {
