@@ -8,11 +8,17 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 - **Step 2 Complete**: Add new blocks and save them to the database ✅
   - Text blocks: Edit text content and choose between H1, H2, H3, or paragraph styles
   - Image blocks: Customize source URL, width, and height
+  - Drag-and-drop image upload from local computer
+  - Automatic dimension detection for images
   - All blocks persist to SQLite backend
 - **Step 3 Complete**: Re-order blocks with drag-and-drop ✅
   - Native HTML5 drag-and-drop implementation
   - Visual drag handle appears on hover
   - Position changes persist to database
+- **Step 4 Complete**: Edit existing blocks ✅
+  - Click any text block to edit content and style
+  - Click any image block to change image or dimensions
+  - Changes save instantly to database
 
 ## Tech Stack
 
@@ -89,8 +95,11 @@ The app will be available at `http://localhost:5173`
 - `GET /api/blocks` - Fetch all blocks ordered by position
 - `POST /api/blocks` - Create a new block
   - Body: `{ type, content?, style?, imageUrl?, width?, height?, position }`
-- `PUT /api/blocks/:id` - Update a block's position
-  - Body: `{ position }`
+- `POST /api/upload` - Upload an image file
+  - Form data with 'image' field
+  - Returns: `{ imageUrl }`
+- `PUT /api/blocks/:id` - Update a block's position or content
+  - Body: `{ position?, content?, style?, imageUrl?, width?, height? }`
 
 ## Block Types
 
@@ -112,7 +121,14 @@ The app will be available at `http://localhost:5173`
 - **Commit 6**: README update for Step 2
 - **Commit 7**: PUT endpoint to update block positions
 - **Commit 8**: Drag-and-drop reordering with position persistence
+- **Commit 9**: README update for Step 3
+- **Commit 10**: Fix scroll to top after drag-and-drop
+- **Commit 11**: Image upload endpoint with multer
+- **Commit 12**: Drag-and-drop image upload with auto dimension detection
+- **Commit 13**: Automatic image resizing to fit page width
+- **Commit 14**: Update PUT endpoint to support editing block content
+- **Commit 15**: Click-to-edit functionality for text and image blocks
 
-## Next Steps
+## All Core Requirements Complete! 🎉
 
 - Step 4: Edit existing blocks
