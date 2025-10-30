@@ -34,6 +34,11 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 - TypeScript
 - SQLite3
 
+### Testing
+- Jest
+- Supertest (API testing)
+- ts-jest (TypeScript support)
+
 ## Project Structure
 
 ```
@@ -42,8 +47,13 @@ A simplified Notion clone built with React, TypeScript, Express, and SQLite.
 │   ├── src/
 │   │   ├── server.ts      # Express server
 │   │   ├── database.ts    # SQLite database setup
-│   │   └── types.ts       # TypeScript types
+│   │   ├── types.ts       # TypeScript types
+│   │   └── __tests__/
+│   │       ├── api.test.ts        # API endpoint tests
+│   │       ├── database.test.ts   # Database operation tests
+│   │       └── testSetup.ts       # Test utilities
 │   ├── package.json
+│   ├── jest.config.js
 │   └── tsconfig.json
 ├── frontend/
 │   ├── src/
@@ -90,6 +100,47 @@ npm run dev
 ```
 The app will be available at `http://localhost:5173`
 
+## Testing
+
+### Running Backend Tests
+
+The backend has comprehensive test coverage with 31 tests covering:
+- API endpoint functionality (GET, POST, PUT)
+- Database operations (create, read, update)
+- Error handling and validation
+- Data integrity
+
+Run tests from the `backend/` directory:
+```bash
+npm test
+```
+
+Run tests in watch mode:
+```bash
+npm run test:watch
+```
+
+Generate coverage report:
+```bash
+npm run test:coverage
+```
+
+### Test Coverage
+
+**API Endpoint Tests** (`api.test.ts` - 14 tests):
+- `GET /api/blocks`: Returns blocks ordered by position, handles empty state and errors
+- `POST /api/blocks`: Creates text and image blocks, validates required fields, handles errors
+- `PUT /api/blocks/:id`: Updates positions, content, styles, images, validates input, handles not found
+
+**Database Operation Tests** (`database.test.ts` - 17 tests):
+- Block Creation: Text blocks, image blocks, auto-increment IDs
+- Block Retrieval: Fetch all blocks, order by position, fetch by ID, count blocks
+- Block Updates: Position updates, content/style updates, image property updates, multi-field updates
+- Position Management: Reordering blocks, handling duplicate positions
+- Data Integrity: Timestamp preservation, null value handling
+
+All tests use an in-memory SQLite database for isolation and speed.
+
 ### API Endpoints
 
 - `GET /api/blocks` - Fetch all blocks ordered by position
@@ -128,7 +179,14 @@ The app will be available at `http://localhost:5173`
 - **Commit 13**: Automatic image resizing to fit page width
 - **Commit 14**: Update PUT endpoint to support editing block content
 - **Commit 15**: Click-to-edit functionality for text and image blocks
+- **Commit 16**: README update for Step 4
+- **Commit 17**: Comprehensive backend tests: 31 tests for API endpoints and database operations
 
 ## All Core Requirements Complete! 🎉
 
-- Step 4: Edit existing blocks
+All 4 steps completed with comprehensive testing:
+- ✅ Step 1: Load and render blocks
+- ✅ Step 2: Add new blocks and save them
+- ✅ Step 3: Re-order blocks with drag-and-drop
+- ✅ Step 4: Edit existing blocks
+- ✅ **Testing**: 31 backend tests with 100% pass rate
