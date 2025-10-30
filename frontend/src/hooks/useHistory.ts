@@ -12,6 +12,14 @@ export function useHistory(initialBlocks: Block[] = []) {
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isRestoringRef = useRef(false);
+  
+  // Use refs to always have current values
+  const historyRef = useRef(history);
+  const currentIndexRef = useRef(currentIndex);
+  
+  // Keep refs in sync
+  historyRef.current = history;
+  currentIndexRef.current = currentIndex;
 
   const canUndo = currentIndex > 0;
   const canRedo = currentIndex < history.length - 1;
@@ -22,35 +30,34 @@ export function useHistory(initialBlocks: Block[] = []) {
       return;
     }
 
-    setHistory(prev => {
-      // Remove any redo history after current index
-      const newHistory = prev.slice(0, currentIndex + 1);
-      
-      // Add new state
-      newHistory.push({
-        blocks: JSON.parse(JSON.stringify(blocks)), // Deep copy
-        timestamp: Date.now()
-      });
-
-      // Limit history to 50 states to prevent memory issues
-      const limitedHistory = newHistory.slice(-50);
-      
-      return limitedHistory;
+    // Use refs to get current values
+    const currentIdx = currentIndexRef.current;
+    const currentHistory = historyRef.current;
+    
+    // Remove any redo history after current index
+    const newHistory = currentHistory.slice(0, currentIdx + 1);
+    
+    // Add new state
+    newHistory.push({
+      blocks: JSON.parse(JSON.stringify(blocks)), // Deep copy
+      timestamp: Date.now()
     });
 
-    setCurrentIndex(prev => {
-      const newIndex = Math.min(prev + 1, 49); // Max index is 49 (for 50 items)
-      return newIndex;
-    });
-  }, [currentIndex]);
+    // Limit history to 50 states to prevent memory issues
+    const limitedHistory = newHistory.slice(-50);
+    
+    setHistory(limitedHistory);
+    setCurrentIndex(limitedHistory.length - 1);
+  }, []);
 
   const undo = useCallback(() => {
-    if (!canUndo) return null;
+    const currentIdx = currentIndexRef.current;
+    if (currentIdx <= 0) return null;
 
     isRestoringRef.current = true;
-    const newIndex = currentIndex - 1;
+    const newIndex = currentIdx - 1;
     setCurrentIndex(newIndex);
-    const restoredState = history[newIndex];
+    const restoredState = historyRef.current[newIndex];
     
     // Small delay to ensure state updates properly
     setTimeout(() => {
@@ -58,15 +65,18 @@ export function useHistory(initialBlocks: Block[] = []) {
     }, 100);
 
     return restoredState.blocks;
-  }, [canUndo, currentIndex, history]);
+  }, []);
 
   const redo = useCallback(() => {
-    if (!canRedo) return null;
+    const currentIdx = currentIndexRef.current;
+    const historyLength = historyRef.current.length;
+    
+    if (currentIdx >= historyLength - 1) return null;
 
     isRestoringRef.current = true;
-    const newIndex = currentIndex + 1;
+    const newIndex = currentIdx + 1;
     setCurrentIndex(newIndex);
-    const restoredState = history[newIndex];
+    const restoredState = historyRef.current[newIndex];
     
     // Small delay to ensure state updates properly
     setTimeout(() => {
@@ -74,7 +84,7 @@ export function useHistory(initialBlocks: Block[] = []) {
     }, 100);
 
     return restoredState.blocks;
-  }, [canRedo, currentIndex, history]);
+  }, []);
 
   const reset = useCallback((blocks: Block[]) => {
     setHistory([{ blocks: JSON.parse(JSON.stringify(blocks)), timestamp: Date.now() }]);
