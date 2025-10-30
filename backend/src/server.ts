@@ -101,16 +101,51 @@ app.post('/api/blocks', async (req, res) => {
 app.put('/api/blocks/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { position } = req.body;
+    const { position, content, style, imageUrl, width, height } = req.body;
 
-    if (position === undefined || position === null) {
-      return res.status(400).json({ error: 'Position is required' });
+    // Build dynamic update query based on provided fields
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    if (position !== undefined && position !== null) {
+      updates.push('position = ?');
+      values.push(position);
     }
 
-    await dbRun(
-      'UPDATE blocks SET position = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-      [position, id]
-    );
+    if (content !== undefined) {
+      updates.push('content = ?');
+      values.push(content);
+    }
+
+    if (style !== undefined) {
+      updates.push('style = ?');
+      values.push(style);
+    }
+
+    if (imageUrl !== undefined) {
+      updates.push('imageUrl = ?');
+      values.push(imageUrl);
+    }
+
+    if (width !== undefined) {
+      updates.push('width = ?');
+      values.push(width);
+    }
+
+    if (height !== undefined) {
+      updates.push('height = ?');
+      values.push(height);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push('updatedAt = CURRENT_TIMESTAMP');
+    values.push(id);
+
+    const sql = `UPDATE blocks SET ${updates.join(', ')} WHERE id = ?`;
+    await dbRun(sql, values);
 
     const updatedBlock = await dbAll('SELECT * FROM blocks WHERE id = ?', [id]) as Block[];
     
