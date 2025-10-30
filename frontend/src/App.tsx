@@ -107,14 +107,13 @@ function App() {
 
       await Promise.all(updates);
       
-      // Refresh blocks to get updated data
-      await fetchBlocks();
+      // Success - positions are already updated in state, no need to refetch
+      setDraggedIndex(null);
     } catch (err) {
       console.error('Failed to update block positions:', err);
       alert('Failed to save new order');
       // Revert on error
       await fetchBlocks();
-    } finally {
       setDraggedIndex(null);
     }
   };
